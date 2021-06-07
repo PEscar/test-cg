@@ -8,6 +8,14 @@
         {{ data.row.name.first }} {{ data.row.name.last }}
       </template>
 
+      <template slot="actions" slot-scope="data">
+        <router-link :to="'/about?lat=' + data.row.location.coordinates.latitude + '&long=' + data.row.location.coordinates.longitude + '&cell=' + data.row.cell + '&phone=' + data.row.phone + '&streetNumber=' + data.row.location.street.number + '&streetName=' + data.row.location.street.name + '&city=' + data.row.location.city + '&email=' + data.row.email + '&thumb=' + data.row.picture.large + '&name=' + data.row.name.first + ' ' + data.row.name.last"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></router-link>
+      </template>
+
+      <template slot="gender" slot-scope="data">
+        {{ data.row.gender == 'male' ? 'Hombre' : 'Mujer' }}
+      </template>
+
     </v-client-table>
 
     <template>
@@ -19,14 +27,20 @@
     <template>
       <h1>Filtros</h1>
 
-      <label for="genderFilter">Género</label>
-      <v-select id="genderFilter" @input="loadRandomUsers" ref="genderFilter" v-model="genderFilter" :options="genderFilterOptions" label="label" :reduce="option => option.value"></v-select>
+      <div class="form-group mb-2">
+        <label for="genderFilter">Género&nbsp;</label>
+        <v-select id="genderFilter" @input="loadRandomUsers" ref="genderFilter" v-model="genderFilter" :options="genderFilterOptions" label="label" :reduce="option => option.value"></v-select>
+      </div>
 
-      <label for="nationalityFilter">Nacionalidad</label>
-      <v-select id="nationalityFilter" @input="loadRandomUsers" ref="nationalityFilter" v-model="nationalityFilter" :options="nationalitiesFilterOptions" label="label" :reduce="option => option.value"></v-select>
+      <div class="form-group mb-2">
+        <label for="nationalityFilter">Nacionalidad&nbsp;</label>
+        <v-select id="nationalityFilter" @input="loadRandomUsers" ref="nationalityFilter" v-model="nationalityFilter" :options="nationalitiesFilterOptions" label="label" :reduce="option => option.value"></v-select>
+      </div>
 
-      <label for="ageFilter">Edad</label>
-      <input type="number" class="form-control" v-model="ageFilter" value=''>
+      <div class="form-group mb-2">
+        <label for="ageFilter">Edad&nbsp;</label>
+        <input type="number" class="" v-model="ageFilter" value=''>
+      </div>
 
     </template>
 
@@ -48,18 +62,21 @@ export default {
 
         randomUsers: [], // table rows
         filteredRandomUsers: [], // results filtered by age
-        columns: ['gender', 'name', 'email', 'nat', 'dob.date', 'registered.date', 'dob.age'], // table columns
+        columns: ['gender', 'name', 'email', 'nat', 'dob.date', 'registered.date', 'dob.age', 'actions'], // table columns
         page: 1, // initial page
         results: 10, // page size
 
         tableOptions: { // table options
+          sortable: ['gender', 'name', 'email', 'nat', 'dob.date', 'registered.date', 'dob.age'],
           headings: {
             gender: 'Género',
             name: 'Nombre',
             email: 'Email',
             nat: 'Nacionalidad',
             'dob.date': 'Fecha de Nacimiento',
+            'dob.age': 'Edad',
             'registered.date': 'Fecha de Registro',
+            actions: '',
           }
         },
       }
@@ -99,7 +116,7 @@ export default {
     loadRandomUsers: function ()
     {
       this.axios
-        .get('https://randomuser.me/api?page=' + this.page + '&results=' + this.results + '&gender=' + this.genderFilter + '&nat=' + this.nationalityFilter)
+        .get('https://randomuser.me/api?inc=gender,name,email,nat,dob,registered,picture,location,phone,cell&page=' + this.page + '&results=' + this.results + '&gender=' + this.genderFilter + '&nat=' + this.nationalityFilter)
         .then(response => (this.randomUsers = response.data.results))
     }
   }
@@ -107,23 +124,29 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
+<style scoped>
+
+.v-select {
   display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
 }
 
-.VueTables__search {
+input[type='number'] {
+  display: inline-block;
+  height: 34px;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #555;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #ccc;
+  border-radius: 4px
+}
+
+</style>
+
+<style>
+  .VueTables__search {
   display: none
 }
 </style>

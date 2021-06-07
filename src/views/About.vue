@@ -1,5 +1,17 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
+  <div class="home">
+    <UserDetail/>
   </div>
 </template>
+
+<script>
+// @ is an alias to /src
+import UserDetail from '@/components/UserDetail.vue'
+
+export default {
+  name: 'home',
+  components: {
+    UserDetail
+  }
+}
+</script>
